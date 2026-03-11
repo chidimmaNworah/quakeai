@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PS — Leads Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --surface: #131316;
+      --surface-2: #1a1a1f;
+      --border: #2a2a30;
+      --text: #e8e8ed;
+      --text-dim: #6e6e7a;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --green: #10b981;
+      --green-glow: rgba(16, 185, 129, 0.15);
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --orange-glow: rgba(245, 158, 11, 0.15);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.15);
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 30px 40px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 35px;
+    }
+
+    .header h1 {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header h1 span { color: var(--accent); }
+
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      margin-left: 10px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .server-time {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      width: fit-content;
+      margin-bottom: 25px;
+    }
+
+    .tab {
+      padding: 10px 28px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 7px;
+      transition: all 0.25s ease;
+    }
+
+    .tab:hover { color: var(--text); }
+
+    .tab.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .tab .count {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-family: var(--mono);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .date-input {
+      padding: 9px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .btn {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #2563eb; box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-ghost { background: var(--surface); color: var(--text-dim); border: 1px solid var(--border); }
+    .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
+
+    .stats { display: flex; gap: 16px; margin-bottom: 25px; flex-wrap: wrap; }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 28px;
+      min-width: 140px;
+    }
+
+    .stat .value {
+      font-family: var(--mono);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat .value.green { color: var(--green); }
+    .stat .value.orange { color: var(--orange); }
+
+    .stat .label {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 18px;
+      font-size: 0.85rem;
+      color: var(--text);
+      border-bottom: 1px solid rgba(42, 42, 48, 0.5);
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--surface-2); }
+
+    .mono { font-family: var(--mono); font-size: 0.8rem; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-depositor { background: var(--green-glow); color: var(--green); }
+    .badge-new { background: var(--accent-glow); color: var(--accent); }
+    .badge-noanswer { background: var(--orange-glow); color: var(--orange); }
+    .badge-wrong { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+    .badge-nointerest { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+    .badge-potential { background: var(--purple-glow); color: var(--purple); }
+    .badge-hungup { background: var(--orange-glow); color: var(--orange); }
+    .badge-default { background: rgba(107, 114, 128, 0.15); color: #9ca3af; }
+
+    .ftd-yes { color: var(--green); font-weight: 700; }
+    .ftd-no { color: var(--text-dim); }
+
+    .detail-btn {
+      padding: 5px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-family: var(--sans);
+      transition: all 0.2s;
+    }
+
+    .detail-btn:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .state-msg { text-align: center; padding: 60px 20px; color: var(--text-dim); }
+
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg { color: var(--red); }
+
+    .pagination {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 16px;
+      padding: 16px;
+    }
+
+    .page-btn {
+      padding: 8px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover { color: var(--text); border-color: var(--accent); }
+    .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .page-info { font-family: var(--mono); font-size: 0.8rem; color: var(--text-dim); }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-bg.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px;
+      max-width: 550px;
+      width: 92%;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: modalIn 0.2s ease;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .modal-top h2 { font-family: var(--mono); font-size: 1rem; color: var(--accent); }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { color: var(--text); }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(42, 42, 48, 0.5);
+    }
+
+    .detail-item:last-child { border-bottom: none; }
+    .detail-key { font-size: 0.8rem; color: var(--text-dim); font-weight: 500; }
+
+    .detail-val {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text);
+      text-align: right;
+      max-width: 300px;
+      word-break: break-all;
+    }
+
+    @media (max-width: 768px) {
+      .app { padding: 20px 16px; }
+      .header h1 { font-size: 1.1rem; }
+      .stat { min-width: 100px; flex: 1; }
+      .controls { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1><span>//</span> PS — Leads<span class="live-dot"></span></h1>
+      <div class="server-time" id="serverTime"></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="leads">Leads <span class="count" id="leadsTabCount">0</span></button>
+      <button class="tab" data-tab="ftd">FTD <span class="count" id="ftdTabCount">0</span></button>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label>From</label>
+        <input type="datetime-local" class="date-input" id="dateFrom">
+      </div>
+      <div class="control-group">
+        <label>To</label>
+        <input type="datetime-local" class="date-input" id="dateTo">
+      </div>
+      <button class="btn btn-primary" id="refreshBtn">Refresh</button>
+      <button class="btn btn-ghost" id="todayBtn">Today</button>
+      <button class="btn btn-ghost" id="weekBtn">7 Days</button>
+      <button class="btn btn-ghost" id="monthBtn">30 Days</button>
+    </div>
+
+    <!-- Leads -->
+    <div class="panel active" id="leads-panel">
+      <div class="stats">
+        <div class="stat"><div class="value" id="leadsTotal">0</div><div class="label">Total Leads</div></div>
+        <div class="stat"><div class="value green" id="leadsFTD">0</div><div class="label">Depositors</div></div>
+        <div class="stat"><div class="value orange" id="leadsNoAnswer">0</div><div class="label">No Answer</div></div>
+      </div>
+      <div class="table-wrap"><div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>Customer ID</th>
+            <th>Country</th>
+            <th>Sale Status</th>
+            <th>FTD</th>
+            <th>Campaign</th>
+            <th>Signup Date</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="leadsBody">
+            <tr><td colspan="7"><div class="state-msg"><div class="spinner"></div>Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div></div>
+      <div class="pagination" id="leadsPag"></div>
+    </div>
+
+    <!-- FTD -->
+    <div class="panel" id="ftd-panel">
+      <div class="stats">
+        <div class="stat"><div class="value" id="ftdTotal">0</div><div class="label">Total FTDs</div></div>
+        <div class="stat"><div class="value green" id="ftdAmount">-</div><div class="label">Total Deposits</div></div>
+      </div>
+      <div class="table-wrap"><div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>Customer ID</th>
+            <th>Country</th>
+            <th>Status</th>
+            <th>Campaign</th>
+            <th>Date</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="ftdBody">
+            <tr><td colspan="6"><div class="state-msg"><div class="spinner"></div>Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div></div>
+      <div class="pagination" id="ftdPag"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <div class="modal-top">
+        <h2 id="modalTitle">Details</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = 'https://quakeai.live/ch';
+    const PER_PAGE = 25;
+
+    let allLeads = [], allFTDs = [];
+    let leadsPage = 1, ftdPage = 1;
+
+    // Defaults
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    document.getElementById('dateFrom').value = `${todayStr}T00:00`;
+    document.getElementById('dateTo').value = now.toISOString().slice(0, 16);
+
+    // Quick buttons
+    document.getElementById('todayBtn').addEventListener('click', () => {
+      document.getElementById('dateFrom').value = `${todayStr}T00:00`;
+      document.getElementById('dateTo').value = `${todayStr}T23:59`;
+      refreshAll();
+    });
+    document.getElementById('weekBtn').addEventListener('click', () => {
+      const d = new Date(); d.setDate(d.getDate() - 7);
+      document.getElementById('dateFrom').value = d.toISOString().slice(0, 16);
+      document.getElementById('dateTo').value = now.toISOString().slice(0, 16);
+      refreshAll();
+    });
+    document.getElementById('monthBtn').addEventListener('click', () => {
+      const d = new Date(); d.setDate(d.getDate() - 30);
+      document.getElementById('dateFrom').value = d.toISOString().slice(0, 16);
+      document.getElementById('dateTo').value = now.toISOString().slice(0, 16);
+      refreshAll();
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+      });
+    });
+
+    // Helpers
+    function fmtDate(v) { return v.replace('T', ' ') + ':00'; }
+
+    function esc(s) {
+      if (s === null || s === undefined) return '-';
+      const d = document.createElement('div');
+      d.textContent = String(s);
+      return d.innerHTML;
+    }
+
+    function flag(code) {
+      if (!code || code.length !== 2) return '';
+      return String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65)) + ' ';
+    }
+
+    function statusBadge(status) {
+      if (!status) return '<span class="badge badge-default">-</span>';
+      const s = status.toLowerCase();
+      if (s === 'depositor') return `<span class="badge badge-depositor">${esc(status)}</span>`;
+      if (s.includes('no answer') || s === 'never answer') return `<span class="badge badge-noanswer">${esc(status)}</span>`;
+      if (s.includes('hung')) return `<span class="badge badge-hungup">${esc(status)}</span>`;
+      if (s.includes('wrong')) return `<span class="badge badge-wrong">${esc(status)}</span>`;
+      if (s.includes('no interest')) return `<span class="badge badge-nointerest">${esc(status)}</span>`;
+      if (s.includes('potential')) return `<span class="badge badge-potential">${esc(status)}</span>`;
+      if (s === 'new') return `<span class="badge badge-new">${esc(status)}</span>`;
+      return `<span class="badge badge-default">${esc(status)}</span>`;
+    }
+
+    function stateRow(cols, type, msg) {
+      const cls = type === 'error' ? 'state-msg error-msg' : 'state-msg';
+      const inner = type === 'loading' ? `<div class="spinner"></div>${msg}` : msg;
+      return `<tr><td colspan="${cols}"><div class="${cls}">${inner}</div></td></tr>`;
+    }
+
+    // Pagination
+    function paginate(containerId, total, current, onPage) {
+      const el = document.getElementById(containerId);
+      const pages = Math.ceil(total / PER_PAGE);
+      if (pages <= 1) { el.innerHTML = ''; return; }
+
+      el.innerHTML = '';
+
+      const prev = document.createElement('button');
+      prev.className = 'page-btn';
+      prev.textContent = '← Prev';
+      prev.disabled = current === 1;
+      prev.onclick = () => onPage(current - 1);
+      el.appendChild(prev);
+
+      for (let i = 1; i <= Math.min(pages, 10); i++) {
+        const b = document.createElement('button');
+        b.className = `page-btn ${i === current ? 'active' : ''}`;
+        b.textContent = i;
+        b.onclick = () => onPage(i);
+        el.appendChild(b);
+      }
+
+      const next = document.createElement('button');
+      next.className = 'page-btn';
+      next.textContent = 'Next →';
+      next.disabled = current === pages;
+      next.onclick = () => onPage(current + 1);
+      el.appendChild(next);
+
+      const info = document.createElement('span');
+      info.className = 'page-info';
+      info.textContent = `${total} total`;
+      el.appendChild(info);
+    }
+
+    // Render Leads
+    function renderLeads() {
+      const tbody = document.getElementById('leadsBody');
+      const start = (leadsPage - 1) * PER_PAGE;
+      const page = allLeads.slice(start, start + PER_PAGE);
+
+      if (!page.length) { tbody.innerHTML = stateRow(7, 'empty', 'No leads'); return; }
+
+      tbody.innerHTML = page.map(l => `<tr>
+        <td class="mono">${esc(l.customerID)}</td>
+        <td>${flag(l.countryCode)}${esc(l.countryName)}</td>
+        <td>${statusBadge(l.saleStatus)}</td>
+        <td>${l.hasFTD ? '<span class="ftd-yes">✓ Yes</span>' : '<span class="ftd-no">No</span>'}</td>
+        <td>${esc(l.campaignName)}</td>
+        <td class="mono">${esc(l.signupDate)}</td>
+        <td><button class="detail-btn" data-idx="${allLeads.indexOf(l)}">View</button></td>
+      </tr>`).join('');
+
+      tbody.querySelectorAll('.detail-btn').forEach(btn => {
+        btn.onclick = () => openModal(allLeads[btn.dataset.idx]);
+      });
+
+      paginate('leadsPag', allLeads.length, leadsPage, p => { leadsPage = p; renderLeads(); });
+    }
+
+    // Render FTDs
+    function renderFTDs() {
+      const tbody = document.getElementById('ftdBody');
+      const start = (ftdPage - 1) * PER_PAGE;
+      const page = allFTDs.slice(start, start + PER_PAGE);
+
+      if (!page.length) { tbody.innerHTML = stateRow(6, 'empty', 'No FTDs'); return; }
+
+      tbody.innerHTML = page.map(f => `<tr>
+        <td class="mono">${esc(f.customerID)}</td>
+        <td>${flag(f.countryCode)}${esc(f.countryName)}</td>
+        <td>${statusBadge(f.saleStatus || 'Depositor')}</td>
+        <td>${esc(f.campaignName)}</td>
+        <td class="mono">${esc(f.signupDate)}</td>
+        <td><button class="detail-btn" data-idx="${allFTDs.indexOf(f)}">View</button></td>
+      </tr>`).join('');
+
+      tbody.querySelectorAll('.detail-btn').forEach(btn => {
+        btn.onclick = () => openModal(allFTDs[btn.dataset.idx]);
+      });
+
+      paginate('ftdPag', allFTDs.length, ftdPage, p => { ftdPage = p; renderFTDs(); });
+    }
+
+    // Fetch
+    async function fetchLeads() {
+      const tbody = document.getElementById('leadsBody');
+      tbody.innerHTML = stateRow(7, 'loading', 'Loading leads...');
+      document.getElementById('leadsPag').innerHTML = '';
+
+      const from = fmtDate(document.getElementById('dateFrom').value);
+      const to = fmtDate(document.getElementById('dateTo').value);
+
+      try {
+        const res = await fetch(`${BASE}/leads_proxy.php?fromDate=${encodeURIComponent(from)}&toDate=${encodeURIComponent(to)}`);
+        const json = await res.json();
+
+        if (json.items && json.items.length > 0) {
+          allLeads = json.items;
+          leadsPage = 1;
+
+          const total = json.total ? json.total.items : allLeads.length;
+          document.getElementById('leadsTotal').textContent = total;
+          document.getElementById('leadsTabCount').textContent = total;
+
+          document.getElementById('leadsFTD').textContent = allLeads.filter(l => l.hasFTD === 1).length;
+          document.getElementById('leadsNoAnswer').textContent = allLeads.filter(l => {
+            const s = (l.saleStatus || '').toLowerCase();
+            return s.includes('no answer') || s === 'never answer';
+          }).length;
+
+          if (json.server) document.getElementById('serverTime').textContent = `Server: ${json.server.date}`;
+
+          renderLeads();
+        } else {
+          allLeads = [];
+          document.getElementById('leadsTotal').textContent = '0';
+          document.getElementById('leadsTabCount').textContent = '0';
+          document.getElementById('leadsFTD').textContent = '0';
+          document.getElementById('leadsNoAnswer').textContent = '0';
+          tbody.innerHTML = stateRow(7, 'empty', 'No leads found for this date range');
+        }
+      } catch (err) {
+        console.error('Leads error:', err);
+        tbody.innerHTML = stateRow(7, 'error', `Error: ${err.message}`);
+      }
+    }
+
+    async function fetchFTDs() {
+      const tbody = document.getElementById('ftdBody');
+      tbody.innerHTML = stateRow(6, 'loading', 'Loading FTDs...');
+      document.getElementById('ftdPag').innerHTML = '';
+
+      const from = fmtDate(document.getElementById('dateFrom').value);
+      const to = fmtDate(document.getElementById('dateTo').value);
+
+      try {
+        const res = await fetch(`${BASE}/ftd_proxy.php?fromDate=${encodeURIComponent(from)}&toDate=${encodeURIComponent(to)}`);
+        const json = await res.json();
+
+        if (json.items && json.items.length > 0) {
+          allFTDs = json.items;
+          ftdPage = 1;
+
+          const total = json.total ? json.total.items : allFTDs.length;
+          document.getElementById('ftdTotal').textContent = total;
+          document.getElementById('ftdTabCount').textContent = total;
+
+          const amt = allFTDs.reduce((s, f) => s + (parseFloat(f.amount || f.Amount) || 0), 0);
+          document.getElementById('ftdAmount').textContent = amt > 0 ? `$${amt.toLocaleString()}` : '-';
+
+          renderFTDs();
+        } else {
+          allFTDs = [];
+          document.getElementById('ftdTotal').textContent = '0';
+          document.getElementById('ftdTabCount').textContent = '0';
+          document.getElementById('ftdAmount').textContent = '-';
+          tbody.innerHTML = stateRow(6, 'empty', 'No FTDs found for this date range');
+        }
+      } catch (err) {
+        console.error('FTD error:', err);
+        tbody.innerHTML = stateRow(6, 'error', `Error: ${err.message}`);
+      }
+    }
+
+    // Modal
+    function openModal(data) {
+      document.getElementById('modalTitle').textContent = `Lead ${data.customerID || ''}`;
+      document.getElementById('modalBody').innerHTML = [
+        ['Customer ID', data.customerID],
+        ['Country', `${flag(data.countryCode)}${data.countryName} (${data.countryCode})`],
+        ['Sale Status', data.saleStatus],
+        ['Has FTD', data.hasFTD ? 'Yes' : 'No'],
+        ['Campaign', data.campaignName],
+        ['Campaign Hash', data.campaignHash],
+        ['Signup Date', data.signupDate],
+        ['Multi Signup', data.multiSignup ? 'Yes' : 'No'],
+        ['Smart Click', data.isSmartClick ? 'Yes' : 'No'],
+        ['Platform', data.platform || '-'],
+        ['Browser', data.browser || '-'],
+        ['Custom1', data.custom1 || '-'],
+        ['Custom2', data.custom2 || '-'],
+        ['Custom3', data.custom3 || '-'],
+        ['Custom4', data.custom4 || '-'],
+        ['Custom5', data.custom5 || '-'],
+        ['Lead Request ID', data.leadRequestIDEncoded || '-'],
+      ].map(([k, v]) => `<div class="detail-item"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`).join('');
+
+      document.getElementById('modalBg').classList.add('open');
+    }
+
+    document.getElementById('modalClose').onclick = () => document.getElementById('modalBg').classList.remove('open');
+    document.getElementById('modalBg').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); };
+
+    // Refresh
+    function refreshAll() {
+      const btn = document.getElementById('refreshBtn');
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+      Promise.all([fetchLeads(), fetchFTDs()]).finally(() => {
+        btn.disabled = false;
+        btn.textContent = 'Refresh';
+      });
+    }
+
+    document.getElementById('refreshBtn').onclick = refreshAll;
+
+    // Go
+    refreshAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campaign Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          sans-serif;
+        background: #0a0e27;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 60px 20px;
+      }
+      h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #00d4ff, #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .subtitle {
+        color: #a0a3bd;
+        font-size: 15px;
+        margin-bottom: 40px;
+      }
+      .campaigns {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        max-width: 1000px;
+        width: 100%;
+      }
+      .campaign-card {
+        background: #161b42;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 28px 24px;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .campaign-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(0, 212, 255, 0.25);
+      }
+      .campaign-card h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .campaign-card .tag {
+        display: inline-block;
+        background: rgba(0, 212, 255, 0.12);
+        color: #00d4ff;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .campaign-card p {
+        color: #a0a3bd;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .campaign-links {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .campaign-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 9px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: opacity 0.2s;
+      }
+      .campaign-links a:hover {
+        opacity: 0.85;
+      }
+      .btn-landing {
+        background: linear-gradient(135deg, #00d4ff, #7c3aed);
+        color: #fff;
+      }
+      .btn-dash {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #a0a3bd;
+      }
+      .btn-dash:hover {
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Campaign Hub</h1>
+    <p class="subtitle">
+      Select a campaign to view its landing page or dashboard
+    </p>
+    <div class="campaigns">
+      <div class="campaign-card">
+        <h2>OpenAFF - Quantum AI</h2>
+        <span class="tag">OpenAFF API</span>
+        <p>
+          Quantum AI landing page integrated with the OpenAFF affiliate network.
+          Sends leads to vip.sazoqie.com, pulls statuses from
+          tracker.openaff.com.
+        </p>
+        <div class="campaign-links">
+          <a href="/openaff/" class="btn-landing">Landing Page</a>
+          <a href="/openaff/dashboard.php" class="btn-dash">Dashboard</a>
+        </div>
+      </div>
+
+      <div class="campaign-card">
+        <h2>Algo - Bitcoin Profit</h2>
+        <span class="tag">AlgoLead API</span>
+        <p>
+          Original Bitcoin Profit campaign using the AlgoLead affiliate network
+          API.
+        </p>
+        <div class="campaign-links">
+          <a href="/algo/btcprft.html" class="btn-landing">Landing Page</a>
+          <a href="/algo/leads.html" class="btn-dash">Dashboard</a>
+        </div>
+      </div>
+
+      <div class="campaign-card">
+        <h2>CH - TrackingWebDo</h2>
+        <span class="tag">TrackingWebDo API</span>
+        <p>
+          Channel variant campaign using the TrackingWebDo affiliate network.
+        </p>
+        <div class="campaign-links">
+          <a href="/ch/btcprft.html" class="btn-landing">Landing Page</a>
+        </div>
+      </div>
+
+      <!-- Add more campaign cards here as you integrate new APIs -->
+    </div>
+  </body>
+</html>

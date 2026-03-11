@@ -1,0 +1,57 @@
+# Secrets
+public_html/config.php
+
+# Server logs
+public_html/*/error_log
+public_html/*/*/error_log
+
+# cPanel / server files
+etc/
+ssl/
+tmp/
+logs/
+mail/
+public_ftp/
+.cpanel/
+.htpasswds/
+.cagefs/
+.caldav/
+.cl.selector/
+.gnupg/
+.softaculous/
+.spamassassin/
+.trash/
+.bash_logout
+.bash_profile
+.bashrc
+.gemrc
+.imunify_patch_id
+.last.inodes
+.lastlogin
+.myimunify_id
+.spamassassinboxenable
+.spamassassinenable
+
+# Backups and archives
+*.tar.gz
+*.zip
+
+# Namecheap parking page and assets
+public_html/parking-page.shtml
+public_html/nc_assets/
+public_html/.well-known/
+
+# macOS resource forks
+__MACOSX/
+public_html/__MACOSX/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# PHP sessions
+tmp/sess_*
