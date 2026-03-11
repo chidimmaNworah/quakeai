@@ -4,13 +4,13 @@ A multi-campaign affiliate lead generation platform built with PHP, HTML, CSS, a
 
 ## Campaigns
 
-| Folder | Network | Description |
-|--------|---------|-------------|
-| `openaff/` | OpenAFF | Landing page + admin-protected dashboard |
-| `algo/` | AlgoLead | Lead registration + leads/FTD tracking |
-| `ch/` | TrackingWebDo | Lead registration + leads/FTD tracking |
-| `qa/` | YourBestNetwork | Lead registration + leads/FTD tracking |
-| `qa/kv/` | YourBestNetwork (KV) | Sub-campaign variant |
+| Folder     | Network              | Description                              |
+| ---------- | -------------------- | ---------------------------------------- |
+| `openaff/` | OpenAFF              | Landing page + admin-protected dashboard |
+| `algo/`    | AlgoLead             | Lead registration + leads/FTD tracking   |
+| `ch/`      | TrackingWebDo        | Lead registration + leads/FTD tracking   |
+| `qa/`      | YourBestNetwork      | Lead registration + leads/FTD tracking   |
+| `qa/kv/`   | YourBestNetwork (KV) | Sub-campaign variant                     |
 
 ## Project Structure
 
