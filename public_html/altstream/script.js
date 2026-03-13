@@ -1,4 +1,4 @@
-// OpenAFF API Integration Script
+// Altstream (Trackbox) API Integration Script
 let countryCode = "";
 let countryISO = "";
 
@@ -59,11 +59,12 @@ const isoToPhone = Object.fromEntries(
   Object.entries(countryPhoneToISO).map(([k, v]) => [v, k]),
 );
 
-// Generate a password that meets API requirements: 8-12 chars, numbers, lower+uppercase
+// Generate a password that meets API requirements: 8-12 chars, numbers, lower+uppercase + special
 function generatePassword() {
   const lower = "abcdefghijklmnopqrstuvwxyz";
   const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const digits = "0123456789";
+  const special = "!@#$";
   const all = lower + upper + digits;
   let pass = "";
   pass += upper[Math.floor(Math.random() * upper.length)];
@@ -72,7 +73,8 @@ function generatePassword() {
   pass += lower[Math.floor(Math.random() * lower.length)];
   pass += digits[Math.floor(Math.random() * digits.length)];
   pass += digits[Math.floor(Math.random() * digits.length)];
-  for (let i = 0; i < 4; i++) {
+  pass += special[Math.floor(Math.random() * special.length)];
+  for (let i = 0; i < 3; i++) {
     pass += all[Math.floor(Math.random() * all.length)];
   }
   return pass
@@ -242,6 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lastName = document.getElementById("last_name").value.trim();
     const email = document.getElementById("emailokobo").value.trim();
     const phoneNumber = document.getElementById("phone").value.trim();
+    const fullPhone = phoneNumber;
 
     // Validate
     let hasError = false;
@@ -273,17 +276,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       last_name: lastName,
       email: email,
       password: password,
-      phonecc: countryCode,
-      phone: phoneNumber,
-      country: countryISO,
+      phone: fullPhone,
       user_ip: clientIP,
-      aff_sub: clickid.replace("clickid_", ""),
-      aff_sub2: "",
-      aff_sub3: window.location.hostname,
-      aff_sub4: "",
-      aff_sub5: "",
-      referer: window.location.href,
-      lang: navigator.language || "en",
+      so: window.location.hostname,
+      sub: clickid.replace("clickid_", ""),
+      MPC_1: "",
+      MPC_2: "",
+      MPC_3: "",
+      MPC_4: "",
+      MPC_5: "",
+      lg: navigator.language
+        ? navigator.language.substring(0, 2).toUpperCase()
+        : "EN",
     };
 
     try {
@@ -300,12 +304,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         setTimeout(() => {
           window.location.href = result.redirect;
         }, 1500);
+      } else if (result.data && result.data.redirect) {
+        overlayMsg.textContent = "Success! Redirecting you now...";
+        setTimeout(() => {
+          window.location.href = result.data.redirect;
+        }, 1500);
       } else if (result.errors) {
         hideOverlay();
         const errorMessages = [];
         for (const [field, msgs] of Object.entries(result.errors)) {
-          errorMessages.push(msgs.join(", "));
-          showFieldError(field, msgs.join(", "));
+          const msgArr = Array.isArray(msgs) ? msgs : [msgs];
+          errorMessages.push(msgArr.join(", "));
+          showFieldError(field, msgArr.join(", "));
         }
         const alertEl = form.querySelector(".alert-danger");
         if (alertEl) {

@@ -7,7 +7,7 @@ require_auth();
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenAFF - Dashboard</title>
+    <title>Altstream &mdash; Leads &amp; Conversions Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -44,8 +44,6 @@ require_auth();
       .btn-refresh { padding: 10px 24px; background: var(--grad); border: none; color: #fff; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border-radius: 8px; transition: opacity 0.2s, transform 0.2s; }
       .btn-refresh:hover { opacity: 0.9; transform: translateY(-1px); }
       .btn-refresh:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-      .toggle-label { display: flex; align-items: center; gap: 6px; color: var(--text2); font-size: 13px; cursor: pointer; }
-      .toggle-label input { accent-color: var(--accent); }
 
       .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
       .stat-card { background: var(--card); border: 1px solid var(--border); padding: 20px 24px; border-radius: 12px; text-align: center; }
@@ -92,7 +90,7 @@ require_auth();
     <div class="dash-container">
       <div class="dash-header">
         <div>
-          <h1 class="dash-title">Leads &amp; Conversions</h1>
+          <h1 class="dash-title">Altstream &mdash; Leads &amp; Conversions</h1>
         </div>
         <div class="dash-nav">
           <span class="admin-badge">Logged in as <strong><?= htmlspecialchars($_SESSION['admin_user'] ?? 'admin') ?></strong></span>
@@ -104,29 +102,30 @@ require_auth();
       <div class="tabs">
         <button class="tab-btn active" data-tab="all">All</button>
         <button class="tab-btn" data-tab="registrations">Registrations</button>
-        <button class="tab-btn" data-tab="conversions">Conversions</button>
+        <button class="tab-btn" data-tab="deposits">Deposits</button>
       </div>
 
       <div class="controls">
         <span class="control-label">Date:</span>
         <input type="date" class="date-input" id="dateFilter" />
-        <label class="toggle-label">
-          <input type="checkbox" id="allStatuses" /> Include all statuses
-        </label>
+        <select class="select-input" id="typeFilter">
+          <option value="3">Leads + Deposits</option>
+          <option value="2">Only Leads</option>
+          <option value="4">Only Deposits</option>
+        </select>
         <button class="btn-refresh" id="refreshBtn">Refresh</button>
       </div>
 
       <div class="stats">
         <div class="stat-card"><div class="num" id="totalCount">-</div><div class="lbl">Total Records</div></div>
         <div class="stat-card"><div class="num" id="regCount">-</div><div class="lbl">Registrations</div></div>
-        <div class="stat-card"><div class="num" id="convCount">-</div><div class="lbl">Conversions (FTD)</div></div>
-        <div class="stat-card"><div class="num" id="totalCost">$0</div><div class="lbl">Total Revenue</div></div>
+        <div class="stat-card"><div class="num" id="ftdCount">-</div><div class="lbl">Deposits (FTD)</div></div>
       </div>
 
       <div class="tab-pane active" id="pane-all">
         <div class="table-wrap"><div class="table-scroll">
           <table>
-            <thead><tr><th>Date/Time</th><th>Click ID</th><th>Type</th><th>Lead Status</th><th>Cost</th><th>Sub 1</th><th>Sub 2</th><th>Details</th></tr></thead>
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Type</th><th>Status</th><th>Details</th></tr></thead>
             <tbody id="allTable"><tr><td colspan="8" class="loading-state"><div class="spinner"></div>Loading...</td></tr></tbody>
           </table>
         </div></div>
@@ -135,17 +134,17 @@ require_auth();
       <div class="tab-pane" id="pane-registrations">
         <div class="table-wrap"><div class="table-scroll">
           <table>
-            <thead><tr><th>Date/Time</th><th>Click ID</th><th>Lead Status</th><th>Cost</th><th>Sub 1</th><th>Sub 2</th><th>Details</th></tr></thead>
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Status</th><th>Details</th></tr></thead>
             <tbody id="regTable"><tr><td colspan="7" class="loading-state"><div class="spinner"></div>Loading...</td></tr></tbody>
           </table>
         </div></div>
       </div>
 
-      <div class="tab-pane" id="pane-conversions">
+      <div class="tab-pane" id="pane-deposits">
         <div class="table-wrap"><div class="table-scroll">
           <table>
-            <thead><tr><th>Date/Time</th><th>Click ID</th><th>Cost</th><th>Sub 1</th><th>Sub 2</th><th>Details</th></tr></thead>
-            <tbody id="convTable"><tr><td colspan="6" class="loading-state"><div class="spinner"></div>Loading...</td></tr></tbody>
+            <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>FTD Date</th><th>Details</th></tr></thead>
+            <tbody id="ftdTable"><tr><td colspan="7" class="loading-state"><div class="spinner"></div>Loading...</td></tr></tbody>
           </table>
         </div></div>
       </div>
@@ -166,7 +165,7 @@ require_auth();
       let currentTab = 'all';
 
       const dateFilter = document.getElementById('dateFilter');
-      const allStatusesCheck = document.getElementById('allStatuses');
+      const typeFilter = document.getElementById('typeFilter');
       const refreshBtn = document.getElementById('refreshBtn');
       const modal = document.getElementById('modal');
       const modalBody = document.getElementById('modalBody');
@@ -188,14 +187,7 @@ require_auth();
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 
       function showModal(record) {
-        const fields = [
-          ['ID', record.id], ['Date/Time', record.ts], ['Click ID', record.click_id],
-          ['Type', record.conversion_type], ['Lead Status', record.lead_status || '\u2014'],
-          ['Cost', '$' + (parseFloat(record.cost) || 0).toFixed(2)],
-          ['aff_sub', record.aff_sub || '\u2014'], ['aff_sub2', record.aff_sub2 || '\u2014'],
-          ['aff_sub3', record.aff_sub3 || '\u2014'], ['aff_sub4', record.aff_sub4 || '\u2014'],
-          ['aff_sub5', record.aff_sub5 || '\u2014'],
-        ];
+        const fields = Object.entries(record).map(([k, v]) => [k, v ?? '—']);
         modalBody.innerHTML = fields.map(([k, v]) =>
           '<div class="detail-row"><span class="detail-key">' + escapeHTML(k) + '</span><span class="detail-val">' + escapeHTML(String(v)) + '</span></div>'
         ).join('');
@@ -208,19 +200,27 @@ require_auth();
         return div.innerHTML;
       }
 
+      function isDeposit(d) {
+        return !!(d.ftd_date || d.ftdDate || d.deposit_date || d.is_ftd);
+      }
+
+      function isRegistration(d) {
+        return !isDeposit(d);
+      }
+
       async function fetchData() {
         refreshBtn.disabled = true;
         refreshBtn.textContent = 'Loading...';
 
-        ['allTable', 'regTable', 'convTable'].forEach(id => {
-          const cols = id === 'allTable' ? 8 : id === 'regTable' ? 7 : 6;
+        ['allTable', 'regTable', 'ftdTable'].forEach(id => {
+          const cols = id === 'allTable' ? 8 : 7;
           document.getElementById(id).innerHTML =
             '<tr><td colspan="' + cols + '" class="loading-state"><div class="spinner"></div>Loading...</td></tr>';
         });
 
         const payload = {};
         if (dateFilter.value) payload.date = dateFilter.value;
-        if (allStatusesCheck.checked) payload.all_statuses = 1;
+        payload.type = typeFilter.value;
 
         try {
           const res = await fetch('leads_proxy.php', {
@@ -235,7 +235,17 @@ require_auth();
           }
 
           const result = await res.json();
-          allData = (result.data && Array.isArray(result.data)) ? result.data : [];
+
+          // Trackbox may return data in various formats
+          if (Array.isArray(result)) {
+            allData = result;
+          } else if (result.data && Array.isArray(result.data)) {
+            allData = result.data;
+          } else if (result.customers && Array.isArray(result.customers)) {
+            allData = result.customers;
+          } else {
+            allData = [];
+          }
         } catch (err) {
           console.error('Fetch error:', err);
           allData = [];
@@ -247,44 +257,49 @@ require_auth();
       }
 
       function renderAll() {
-        const regs = allData.filter(d => d.conversion_type === 'Registration');
-        const convs = allData.filter(d => d.conversion_type === 'Conversion');
-        const totalCost = allData.reduce((s, d) => s + (parseFloat(d.cost) || 0), 0);
+        const regs = allData.filter(d => isRegistration(d));
+        const ftds = allData.filter(d => isDeposit(d));
 
         document.getElementById('totalCount').textContent = allData.length;
         document.getElementById('regCount').textContent = regs.length;
-        document.getElementById('convCount').textContent = convs.length;
-        document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+        document.getElementById('ftdCount').textContent = ftds.length;
 
-        renderTable('allTable', allData, 8, (d, i) =>
-          '<tr><td>' + escapeHTML(d.ts) + '</td>' +
-          '<td style="font-family:monospace;font-size:11px">' + escapeHTML(d.click_id || '\u2014') + '</td>' +
-          '<td><span class="badge ' + (d.conversion_type === 'Registration' ? 'badge-reg' : 'badge-conv') + '">' + escapeHTML(d.conversion_type) + '</span></td>' +
-          '<td>' + (d.lead_status ? '<span class="badge badge-status">' + escapeHTML(d.lead_status) + '</span>' : '\u2014') + '</td>' +
-          '<td>$' + (parseFloat(d.cost) || 0).toFixed(2) + '</td>' +
-          '<td>' + escapeHTML(d.aff_sub || '\u2014') + '</td>' +
-          '<td>' + escapeHTML(d.aff_sub2 || '\u2014') + '</td>' +
-          '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' + i + '])">View</button></td></tr>'
-        );
+        // All table
+        renderTable('allTable', allData, 8, (d, i) => {
+          const name = escapeHTML((d.firstname || d.first_name || '') + ' ' + (d.lastname || d.last_name || ''));
+          const date = escapeHTML(d.created_at || d.registration_date || d.date || '—');
+          const email = escapeHTML(d.email || '—');
+          const phone = escapeHTML(d.phone || '—');
+          const country = escapeHTML(d.country || d.countryCode || '—');
+          const type = isDeposit(d) ? '<span class="badge badge-conv">Deposit</span>' : '<span class="badge badge-reg">Lead</span>';
+          const status = d.status ? '<span class="badge badge-status">' + escapeHTML(d.status) + '</span>' : '—';
+          return '<tr><td>' + date + '</td><td>' + name + '</td><td>' + email + '</td><td>' + phone + '</td><td>' + country + '</td><td>' + type + '</td><td>' + status + '</td>' +
+            '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' + i + '])">View</button></td></tr>';
+        });
 
+        // Registrations table
         renderTable('regTable', regs, 7, (d) => {
           const idx = allData.indexOf(d);
-          return '<tr><td>' + escapeHTML(d.ts) + '</td>' +
-            '<td style="font-family:monospace;font-size:11px">' + escapeHTML(d.click_id || '\u2014') + '</td>' +
-            '<td>' + (d.lead_status ? '<span class="badge badge-status">' + escapeHTML(d.lead_status) + '</span>' : '\u2014') + '</td>' +
-            '<td>$' + (parseFloat(d.cost) || 0).toFixed(2) + '</td>' +
-            '<td>' + escapeHTML(d.aff_sub || '\u2014') + '</td>' +
-            '<td>' + escapeHTML(d.aff_sub2 || '\u2014') + '</td>' +
+          const name = escapeHTML((d.firstname || d.first_name || '') + ' ' + (d.lastname || d.last_name || ''));
+          const date = escapeHTML(d.created_at || d.registration_date || d.date || '—');
+          const email = escapeHTML(d.email || '—');
+          const phone = escapeHTML(d.phone || '—');
+          const country = escapeHTML(d.country || d.countryCode || '—');
+          const status = d.status ? '<span class="badge badge-status">' + escapeHTML(d.status) + '</span>' : '—';
+          return '<tr><td>' + date + '</td><td>' + name + '</td><td>' + email + '</td><td>' + phone + '</td><td>' + country + '</td><td>' + status + '</td>' +
             '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' + idx + '])">View</button></td></tr>';
         });
 
-        renderTable('convTable', convs, 6, (d) => {
+        // Deposits table
+        renderTable('ftdTable', ftds, 7, (d) => {
           const idx = allData.indexOf(d);
-          return '<tr><td>' + escapeHTML(d.ts) + '</td>' +
-            '<td style="font-family:monospace;font-size:11px">' + escapeHTML(d.click_id || '\u2014') + '</td>' +
-            '<td>$' + (parseFloat(d.cost) || 0).toFixed(2) + '</td>' +
-            '<td>' + escapeHTML(d.aff_sub || '\u2014') + '</td>' +
-            '<td>' + escapeHTML(d.aff_sub2 || '\u2014') + '</td>' +
+          const name = escapeHTML((d.firstname || d.first_name || '') + ' ' + (d.lastname || d.last_name || ''));
+          const date = escapeHTML(d.created_at || d.registration_date || d.date || '—');
+          const email = escapeHTML(d.email || '—');
+          const phone = escapeHTML(d.phone || '—');
+          const country = escapeHTML(d.country || d.countryCode || '—');
+          const ftdDate = escapeHTML(d.ftd_date || d.ftdDate || d.deposit_date || '—');
+          return '<tr><td>' + date + '</td><td>' + name + '</td><td>' + email + '</td><td>' + phone + '</td><td>' + country + '</td><td>' + ftdDate + '</td>' +
             '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' + idx + '])">View</button></td></tr>';
         });
       }
@@ -300,6 +315,7 @@ require_auth();
 
       refreshBtn.addEventListener('click', fetchData);
       dateFilter.addEventListener('change', fetchData);
+      typeFilter.addEventListener('change', fetchData);
       fetchData();
     </script>
   </body>

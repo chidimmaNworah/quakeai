@@ -80,14 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const phoneInput = document.getElementById("phone");
   if (phoneInput) {
-    phoneInput.placeholder = `${countryCode} - Phone Number`;
-    phoneInput.value = `${countryCode}-`;
-
-    phoneInput.addEventListener("keydown", function (e) {
-      if (this.value.indexOf(`${countryCode}-`) !== 0) {
-        this.value = `${countryCode}-`;
-      }
-    });
+    phoneInput.placeholder = "Phone Number";
   }
 
   investForm.addEventListener("submit", async (e) => {
@@ -110,9 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       custom2: "",
       custom3: "",
       ip: clientIP,
-      phone: document
-        .getElementById("phone")
-        .value.replace(`${countryCode}-`, ""),
+      phone: document.getElementById("phone").value,
     };
 
     try {

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenAFF - Leads</title>
+    <title>Altstream &mdash; Leads &amp; Deposits</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,7 +18,6 @@
         margin: 0;
         padding: 0;
       }
-
       :root {
         --bg: #0a0e27;
         --bg2: #111638;
@@ -33,7 +32,6 @@
         --red: #ef4444;
         --yellow: #f59e0b;
       }
-
       body {
         font-family:
           "Inter",
@@ -44,12 +42,10 @@
         min-height: 100vh;
         padding: 20px;
       }
-
       .dash-container {
         max-width: 1400px;
         margin: 0 auto;
       }
-
       .dash-header {
         display: flex;
         justify-content: space-between;
@@ -58,7 +54,6 @@
         flex-wrap: wrap;
         gap: 15px;
       }
-
       .dash-title {
         font-size: 28px;
         font-weight: 700;
@@ -66,7 +61,6 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
-
       .dash-link {
         color: var(--accent);
         text-decoration: none;
@@ -77,13 +71,11 @@
         text-decoration: underline;
       }
 
-      /* Tabs */
       .tabs {
         display: flex;
         gap: 8px;
         margin-bottom: 20px;
       }
-
       .tab-btn {
         padding: 10px 28px;
         background: var(--card);
@@ -106,7 +98,6 @@
         border-color: transparent;
       }
 
-      /* Controls */
       .controls {
         display: flex;
         gap: 12px;
@@ -114,13 +105,11 @@
         flex-wrap: wrap;
         align-items: center;
       }
-
       .control-label {
         color: var(--text2);
         font-size: 13px;
         font-weight: 500;
       }
-
       .date-input,
       .select-input {
         padding: 10px 14px;
@@ -137,7 +126,6 @@
       .select-input:focus {
         border-color: var(--accent);
       }
-
       .btn-refresh {
         padding: 10px 24px;
         background: var(--grad);
@@ -162,26 +150,12 @@
         transform: none;
       }
 
-      .toggle-label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: var(--text2);
-        font-size: 13px;
-        cursor: pointer;
-      }
-      .toggle-label input {
-        accent-color: var(--accent);
-      }
-
-      /* Stats */
       .stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 16px;
         margin-bottom: 24px;
       }
-
       .stat-card {
         background: var(--card);
         border: 1px solid var(--border);
@@ -202,7 +176,6 @@
         letter-spacing: 0.5px;
       }
 
-      /* Tabs content */
       .tab-pane {
         display: none;
       }
@@ -210,24 +183,20 @@
         display: block;
       }
 
-      /* Table */
       .table-wrap {
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 12px;
         overflow: hidden;
       }
-
       .table-scroll {
         overflow-x: auto;
       }
-
       table {
         width: 100%;
         border-collapse: collapse;
         min-width: 700px;
       }
-
       th,
       td {
         padding: 14px 16px;
@@ -235,7 +204,6 @@
         border-bottom: 1px solid var(--border);
         font-size: 13px;
       }
-
       th {
         background: rgba(255, 255, 255, 0.02);
         color: var(--accent);
@@ -245,7 +213,6 @@
         letter-spacing: 0.5px;
         white-space: nowrap;
       }
-
       tr:hover td {
         background: rgba(255, 255, 255, 0.02);
       }
@@ -284,13 +251,11 @@
         font-size: 40px;
         margin-bottom: 12px;
       }
-
       .loading-state {
         text-align: center;
         padding: 60px 20px;
         color: var(--text2);
       }
-
       .spinner {
         width: 36px;
         height: 36px;
@@ -306,7 +271,6 @@
         }
       }
 
-      /* Detail Modal */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -320,7 +284,6 @@
       .modal-overlay.active {
         display: flex;
       }
-
       .modal-box {
         background: var(--card);
         border: 1px solid var(--border);
@@ -331,7 +294,6 @@
         max-height: 80vh;
         overflow-y: auto;
       }
-
       .modal-top {
         display: flex;
         justify-content: space-between;
@@ -353,7 +315,6 @@
       .modal-close:hover {
         color: #fff;
       }
-
       .detail-row {
         display: flex;
         justify-content: space-between;
@@ -380,7 +341,7 @@
     <div class="dash-container">
       <div class="dash-header">
         <div>
-          <h1 class="dash-title">Leads &amp; Conversions</h1>
+          <h1 class="dash-title">Altstream &mdash; Leads &amp; Deposits</h1>
         </div>
         <a href="index.html" class="dash-link">&larr; Back to Landing Page</a>
       </div>
@@ -388,19 +349,20 @@
       <div class="tabs">
         <button class="tab-btn active" data-tab="all">All</button>
         <button class="tab-btn" data-tab="registrations">Registrations</button>
-        <button class="tab-btn" data-tab="conversions">Conversions</button>
+        <button class="tab-btn" data-tab="deposits">Deposits</button>
       </div>
 
       <div class="controls">
         <span class="control-label">Date:</span>
         <input type="date" class="date-input" id="dateFilter" />
-        <label class="toggle-label">
-          <input type="checkbox" id="allStatuses" /> Include all statuses
-        </label>
+        <select class="select-input" id="typeFilter">
+          <option value="3">Leads + Deposits</option>
+          <option value="2">Only Leads</option>
+          <option value="4">Only Deposits</option>
+        </select>
         <button class="btn-refresh" id="refreshBtn">Refresh</button>
       </div>
 
-      <!-- Stats -->
       <div class="stats">
         <div class="stat-card">
           <div class="num" id="totalCount">-</div>
@@ -411,29 +373,24 @@
           <div class="lbl">Registrations</div>
         </div>
         <div class="stat-card">
-          <div class="num" id="convCount">-</div>
-          <div class="lbl">Conversions (FTD)</div>
-        </div>
-        <div class="stat-card">
-          <div class="num" id="totalCost">$0</div>
-          <div class="lbl">Total Revenue</div>
+          <div class="num" id="ftdCount">-</div>
+          <div class="lbl">Deposits (FTD)</div>
         </div>
       </div>
 
-      <!-- All Tab -->
       <div class="tab-pane active" id="pane-all">
         <div class="table-wrap">
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Date/Time</th>
-                  <th>Click ID</th>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Country</th>
                   <th>Type</th>
-                  <th>Lead Status</th>
-                  <th>Cost</th>
-                  <th>Sub 1</th>
-                  <th>Sub 2</th>
+                  <th>Status</th>
                   <th>Details</th>
                 </tr>
               </thead>
@@ -450,19 +407,18 @@
         </div>
       </div>
 
-      <!-- Registrations Tab -->
       <div class="tab-pane" id="pane-registrations">
         <div class="table-wrap">
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Date/Time</th>
-                  <th>Click ID</th>
-                  <th>Lead Status</th>
-                  <th>Cost</th>
-                  <th>Sub 1</th>
-                  <th>Sub 2</th>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Country</th>
+                  <th>Status</th>
                   <th>Details</th>
                 </tr>
               </thead>
@@ -479,24 +435,24 @@
         </div>
       </div>
 
-      <!-- Conversions Tab -->
-      <div class="tab-pane" id="pane-conversions">
+      <div class="tab-pane" id="pane-deposits">
         <div class="table-wrap">
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Date/Time</th>
-                  <th>Click ID</th>
-                  <th>Cost</th>
-                  <th>Sub 1</th>
-                  <th>Sub 2</th>
+                  <th>Date</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Country</th>
+                  <th>FTD Date</th>
                   <th>Details</th>
                 </tr>
               </thead>
-              <tbody id="convTable">
+              <tbody id="ftdTable">
                 <tr>
-                  <td colspan="6" class="loading-state">
+                  <td colspan="7" class="loading-state">
                     <div class="spinner"></div>
                     Loading...
                   </td>
@@ -508,7 +464,6 @@
       </div>
     </div>
 
-    <!-- Detail Modal -->
     <div class="modal-overlay" id="modal">
       <div class="modal-box">
         <div class="modal-top">
@@ -520,22 +475,18 @@
     </div>
 
     <script>
-      // ---------- STATE ----------
       let allData = [];
       let currentTab = "all";
 
-      // ---------- ELEMENTS ----------
       const dateFilter = document.getElementById("dateFilter");
-      const allStatusesCheck = document.getElementById("allStatuses");
+      const typeFilter = document.getElementById("typeFilter");
       const refreshBtn = document.getElementById("refreshBtn");
       const modal = document.getElementById("modal");
       const modalBody = document.getElementById("modalBody");
       const modalClose = document.getElementById("modalClose");
 
-      // Set default date to today
       dateFilter.value = new Date().toISOString().split("T")[0];
 
-      // ---------- TABS ----------
       document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
           document
@@ -546,11 +497,10 @@
           document
             .querySelectorAll(".tab-pane")
             .forEach((p) => p.classList.remove("active"));
-          document.getElementById(`pane-${currentTab}`).classList.add("active");
+          document.getElementById("pane-" + currentTab).classList.add("active");
         });
       });
 
-      // ---------- MODAL ----------
       modalClose.addEventListener("click", () =>
         modal.classList.remove("active"),
       );
@@ -559,23 +509,15 @@
       });
 
       function showModal(record) {
-        const fields = [
-          ["ID", record.id],
-          ["Date/Time", record.ts],
-          ["Click ID", record.click_id],
-          ["Type", record.conversion_type],
-          ["Lead Status", record.lead_status || "—"],
-          ["Cost", "$" + (parseFloat(record.cost) || 0).toFixed(2)],
-          ["aff_sub", record.aff_sub || "—"],
-          ["aff_sub2", record.aff_sub2 || "—"],
-          ["aff_sub3", record.aff_sub3 || "—"],
-          ["aff_sub4", record.aff_sub4 || "—"],
-          ["aff_sub5", record.aff_sub5 || "—"],
-        ];
+        const fields = Object.entries(record).map(([k, v]) => [k, v ?? "—"]);
         modalBody.innerHTML = fields
           .map(
             ([k, v]) =>
-              `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${escapeHTML(String(v))}</span></div>`,
+              '<div class="detail-row"><span class="detail-key">' +
+              escapeHTML(k) +
+              '</span><span class="detail-val">' +
+              escapeHTML(String(v)) +
+              "</span></div>",
           )
           .join("");
         modal.classList.add("active");
@@ -587,21 +529,29 @@
         return div.innerHTML;
       }
 
-      // ---------- FETCH DATA ----------
+      function isDeposit(d) {
+        return !!(d.ftd_date || d.ftdDate || d.deposit_date || d.is_ftd);
+      }
+
+      function isRegistration(d) {
+        return !isDeposit(d);
+      }
+
       async function fetchData() {
         refreshBtn.disabled = true;
         refreshBtn.textContent = "Loading...";
 
-        // Show loading in all tables
-        ["allTable", "regTable", "convTable"].forEach((id) => {
-          const cols = id === "allTable" ? 8 : id === "regTable" ? 7 : 6;
+        ["allTable", "regTable", "ftdTable"].forEach((id) => {
+          const cols = id === "allTable" ? 8 : 7;
           document.getElementById(id).innerHTML =
-            `<tr><td colspan="${cols}" class="loading-state"><div class="spinner"></div>Loading...</td></tr>`;
+            '<tr><td colspan="' +
+            cols +
+            '" class="loading-state"><div class="spinner"></div>Loading...</td></tr>';
         });
 
         const payload = {};
         if (dateFilter.value) payload.date = dateFilter.value;
-        if (allStatusesCheck.checked) payload.all_statuses = 1;
+        payload.type = typeFilter.value;
 
         try {
           const res = await fetch("leads_proxy.php", {
@@ -612,8 +562,12 @@
 
           const result = await res.json();
 
-          if (result.data && Array.isArray(result.data)) {
+          if (Array.isArray(result)) {
+            allData = result;
+          } else if (result.data && Array.isArray(result.data)) {
             allData = result.data;
+          } else if (result.customers && Array.isArray(result.customers)) {
+            allData = result.customers;
           } else {
             allData = [];
           }
@@ -627,89 +581,146 @@
         refreshBtn.textContent = "Refresh";
       }
 
-      // ---------- RENDER ----------
       function renderAll() {
-        const regs = allData.filter(
-          (d) => d.conversion_type === "Registration",
-        );
-        const convs = allData.filter((d) => d.conversion_type === "Conversion");
-        const totalCost = allData.reduce(
-          (s, d) => s + (parseFloat(d.cost) || 0),
-          0,
-        );
+        const regs = allData.filter((d) => isRegistration(d));
+        const ftds = allData.filter((d) => isDeposit(d));
 
-        // Stats
         document.getElementById("totalCount").textContent = allData.length;
         document.getElementById("regCount").textContent = regs.length;
-        document.getElementById("convCount").textContent = convs.length;
-        document.getElementById("totalCost").textContent =
-          "$" + totalCost.toFixed(2);
+        document.getElementById("ftdCount").textContent = ftds.length;
 
-        // All Table
-        renderTable(
-          "allTable",
-          allData,
-          8,
-          (d, i) => `
-        <tr>
-          <td>${escapeHTML(d.ts)}</td>
-          <td style="font-family:monospace;font-size:11px">${escapeHTML(d.click_id || "—")}</td>
-          <td><span class="badge ${d.conversion_type === "Registration" ? "badge-reg" : "badge-conv"}">${escapeHTML(d.conversion_type)}</span></td>
-          <td>${d.lead_status ? `<span class="badge badge-status">${escapeHTML(d.lead_status)}</span>` : "—"}</td>
-          <td>$${(parseFloat(d.cost) || 0).toFixed(2)}</td>
-          <td>${escapeHTML(d.aff_sub || "—")}</td>
-          <td>${escapeHTML(d.aff_sub2 || "—")}</td>
-          <td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[${i}])">View</button></td>
-        </tr>
-      `,
-        );
-
-        // Registrations Table
-        renderTable("regTable", regs, 7, (d) => {
-          const idx = allData.indexOf(d);
-          return `
-          <tr>
-            <td>${escapeHTML(d.ts)}</td>
-            <td style="font-family:monospace;font-size:11px">${escapeHTML(d.click_id || "—")}</td>
-            <td>${d.lead_status ? `<span class="badge badge-status">${escapeHTML(d.lead_status)}</span>` : "—"}</td>
-            <td>$${(parseFloat(d.cost) || 0).toFixed(2)}</td>
-            <td>${escapeHTML(d.aff_sub || "—")}</td>
-            <td>${escapeHTML(d.aff_sub2 || "—")}</td>
-            <td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[${idx}])">View</button></td>
-          </tr>
-        `;
+        renderTable("allTable", allData, 8, (d, i) => {
+          const name = escapeHTML(
+            (d.firstname || d.first_name || "") +
+              " " +
+              (d.lastname || d.last_name || ""),
+          );
+          const date = escapeHTML(
+            d.created_at || d.registration_date || d.date || "—",
+          );
+          const email = escapeHTML(d.email || "—");
+          const phone = escapeHTML(d.phone || "—");
+          const country = escapeHTML(d.country || d.countryCode || "—");
+          const type = isDeposit(d)
+            ? '<span class="badge badge-conv">Deposit</span>'
+            : '<span class="badge badge-reg">Lead</span>';
+          const status = d.status
+            ? '<span class="badge badge-status">' +
+              escapeHTML(d.status) +
+              "</span>"
+            : "—";
+          return (
+            "<tr><td>" +
+            date +
+            "</td><td>" +
+            name +
+            "</td><td>" +
+            email +
+            "</td><td>" +
+            phone +
+            "</td><td>" +
+            country +
+            "</td><td>" +
+            type +
+            "</td><td>" +
+            status +
+            "</td>" +
+            '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' +
+            i +
+            '])">View</button></td></tr>'
+          );
         });
 
-        // Conversions Table
-        renderTable("convTable", convs, 6, (d) => {
+        renderTable("regTable", regs, 7, (d) => {
           const idx = allData.indexOf(d);
-          return `
-          <tr>
-            <td>${escapeHTML(d.ts)}</td>
-            <td style="font-family:monospace;font-size:11px">${escapeHTML(d.click_id || "—")}</td>
-            <td>$${(parseFloat(d.cost) || 0).toFixed(2)}</td>
-            <td>${escapeHTML(d.aff_sub || "—")}</td>
-            <td>${escapeHTML(d.aff_sub2 || "—")}</td>
-            <td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[${idx}])">View</button></td>
-          </tr>
-        `;
+          const name = escapeHTML(
+            (d.firstname || d.first_name || "") +
+              " " +
+              (d.lastname || d.last_name || ""),
+          );
+          const date = escapeHTML(
+            d.created_at || d.registration_date || d.date || "—",
+          );
+          const email = escapeHTML(d.email || "—");
+          const phone = escapeHTML(d.phone || "—");
+          const country = escapeHTML(d.country || d.countryCode || "—");
+          const status = d.status
+            ? '<span class="badge badge-status">' +
+              escapeHTML(d.status) +
+              "</span>"
+            : "—";
+          return (
+            "<tr><td>" +
+            date +
+            "</td><td>" +
+            name +
+            "</td><td>" +
+            email +
+            "</td><td>" +
+            phone +
+            "</td><td>" +
+            country +
+            "</td><td>" +
+            status +
+            "</td>" +
+            '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' +
+            idx +
+            '])">View</button></td></tr>'
+          );
+        });
+
+        renderTable("ftdTable", ftds, 7, (d) => {
+          const idx = allData.indexOf(d);
+          const name = escapeHTML(
+            (d.firstname || d.first_name || "") +
+              " " +
+              (d.lastname || d.last_name || ""),
+          );
+          const date = escapeHTML(
+            d.created_at || d.registration_date || d.date || "—",
+          );
+          const email = escapeHTML(d.email || "—");
+          const phone = escapeHTML(d.phone || "—");
+          const country = escapeHTML(d.country || d.countryCode || "—");
+          const ftdDate = escapeHTML(
+            d.ftd_date || d.ftdDate || d.deposit_date || "—",
+          );
+          return (
+            "<tr><td>" +
+            date +
+            "</td><td>" +
+            name +
+            "</td><td>" +
+            email +
+            "</td><td>" +
+            phone +
+            "</td><td>" +
+            country +
+            "</td><td>" +
+            ftdDate +
+            "</td>" +
+            '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' +
+            idx +
+            '])">View</button></td></tr>'
+          );
         });
       }
 
       function renderTable(tableId, data, cols, rowFn) {
         const tbody = document.getElementById(tableId);
         if (data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="${cols}" class="empty-state"><div class="icon">&#128196;</div>No records found for this date.</td></tr>`;
+          tbody.innerHTML =
+            '<tr><td colspan="' +
+            cols +
+            '" class="empty-state"><div class="icon">&#128196;</div>No records found for this date.</td></tr>';
           return;
         }
         tbody.innerHTML = data.map((d, i) => rowFn(d, i)).join("");
       }
 
-      // ---------- EVENTS ----------
       refreshBtn.addEventListener("click", fetchData);
       dateFilter.addEventListener("change", fetchData);
-
-      // Initial load
+      typeFilter.addEventListener("change", fetchData);
       fetchData();
     </script>
   </body>
