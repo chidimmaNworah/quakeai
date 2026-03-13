@@ -115,13 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Setting up phone input field
   const phoneInput = document.getElementById("phone");
   if (phoneInput) {
-    phoneInput.placeholder = `${countryCode} - Phone Number`;
-    phoneInput.value = `${countryCode}-`;
-    phoneInput.addEventListener("keydown", function (e) {
-      if (this.value.indexOf(`${countryCode}-`) !== 0) {
-        this.value = `${countryCode}-`;
-      }
-    });
+    phoneInput.placeholder = "Phone Number";
   }
 
   // Form submission event handling
@@ -143,9 +137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       FirstName: document.getElementById("first_name").value,
       LastName: document.getElementById("last_name").value,
       PhonePrefix: countryCode.replace("+", ""),
-      Phone: document
-        .getElementById("phone")
-        .value.replace(`${countryCode}-`, ""),
+      Phone: document.getElementById("phone").value,
       lang: "en-US",
       FunnelID: 600,
       CustomSource: "Immediate Edge",

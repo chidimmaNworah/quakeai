@@ -87,13 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const phoneInput = document.getElementById("phone");
   if (phoneInput) {
-    phoneInput.placeholder = `${countryCode} - Phone Number`;
-    phoneInput.value = `${countryCode}-`;
-    phoneInput.addEventListener("keydown", function () {
-      if (!this.value.startsWith(`${countryCode}-`)) {
-        this.value = `${countryCode}-`;
-      }
-    });
+    phoneInput.placeholder = "Phone Number";
   }
 
   investForm.addEventListener("submit", async (e) => {
@@ -106,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const email = document.getElementById("emailokobo").value;
     const phone = document
       .getElementById("phone")
-      .value.replace(`${countryCode}-`, "")
+      .value
       .replace(/\D/g, "");
     const password = "085fiyXDV";
     const ip = await fetch("https://api.ipify.org?format=json")
