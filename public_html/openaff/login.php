@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($username === ADMIN_USERNAME && password_verify($password, ADMIN_PASSWORD_HASH)) {
+    if ($username === get_admin_username() && verify_admin_password($password)) {
         session_regenerate_id(true);
         $_SESSION['admin_logged_in'] = true;
         $_SESSION['admin_user'] = $username;

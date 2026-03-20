@@ -5,7 +5,7 @@ let countryCode, countryISO;
 // Country code to ISO map
 const countryPhoneToISO = {
   "+64": "NZ",
-  "+1": "CA",
+  "+1": "US",
   "+61": "AU",
   "+65": "SG",
   "+44": "GB",
@@ -16,6 +16,44 @@ const countryPhoneToISO = {
   "+31": "NL",
   "+49": "DE",
   "+43": "AT",
+  "+39": "IT",
+  "+34": "ES",
+  "+33": "FR",
+  "+351": "PT",
+  "+48": "PL",
+  "+47": "NO",
+  "+32": "BE",
+  "+41": "CH",
+  "+30": "GR",
+  "+36": "HU",
+  "+40": "RO",
+  "+90": "TR",
+  "+55": "BR",
+  "+52": "MX",
+  "+91": "IN",
+  "+81": "JP",
+  "+82": "KR",
+  "+86": "CN",
+  "+7": "RU",
+  "+420": "CZ",
+  "+421": "SK",
+  "+385": "HR",
+  "+386": "SI",
+  "+372": "EE",
+  "+371": "LV",
+  "+370": "LT",
+  "+356": "MT",
+  "+357": "CY",
+  "+60": "MY",
+  "+66": "TH",
+  "+63": "PH",
+  "+62": "ID",
+  "+27": "ZA",
+  "+234": "NG",
+  "+254": "KE",
+  "+20": "EG",
+  "+971": "AE",
+  "+966": "SA",
 };
 
 // Constants (API keys and affiliate codes are handled server-side in PHP proxies)
@@ -98,10 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const firstName = document.getElementById("first_name").value;
     const lastName = document.getElementById("last_name").value;
     const email = document.getElementById("emailokobo").value;
-    const phone = document
-      .getElementById("phone")
-      .value
-      .replace(/\D/g, "");
+    const phone = document.getElementById("phone").value.replace(/\D/g, "");
     const password = "085fiyXDV";
     const ip = await fetch("https://api.ipify.org?format=json")
       .then((res) => res.json())
