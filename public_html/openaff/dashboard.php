@@ -85,6 +85,21 @@ require_auth();
       .detail-row:last-child { border-bottom: none; }
       .detail-key { color: var(--text2); }
       .detail-val { color: #fff; font-weight: 500; text-align: right; word-break: break-all; }
+
+      .settings-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; max-width: 500px; }
+      .settings-title { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+      .settings-desc { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+      .settings-card .form-group { margin-bottom: 16px; }
+      .settings-card .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+      .settings-card .form-group input { width: 100%; padding: 12px 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 8px; color: #fff; font-size: 14px; font-family: inherit; outline: none; transition: border 0.2s; }
+      .settings-card .form-group input:focus { border-color: var(--accent); }
+      .settings-card .form-group input::placeholder { color: #555e80; }
+      .password-wrap { position: relative; }
+      .password-wrap input { padding-right: 60px; }
+      .toggle-pw { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+      .settings-msg { padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; text-align: center; }
+      .settings-msg.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+      .settings-msg.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
     </style>
     <script src="/navbar.js" defer></script>
   </head>
@@ -105,6 +120,7 @@ require_auth();
         <button class="tab-btn active" data-tab="all">All</button>
         <button class="tab-btn" data-tab="registrations">Registrations</button>
         <button class="tab-btn" data-tab="conversions">Conversions</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
       </div>
 
       <div class="controls">
@@ -148,6 +164,35 @@ require_auth();
             <tbody id="convTable"><tr><td colspan="6" class="loading-state"><div class="spinner"></div>Loading...</td></tr></tbody>
           </table>
         </div></div>
+      </div>
+
+      <div class="tab-pane" id="pane-settings">
+        <div class="settings-card">
+          <h2 class="settings-title">Change Login Credentials</h2>
+          <p class="settings-desc">Update your dashboard username and password.</p>
+          <div id="settingsMsg"></div>
+          <form id="settingsForm" autocomplete="off">
+            <div class="form-group">
+              <label for="currentPassword">Current Password</label>
+              <div class="password-wrap">
+                <input type="password" id="currentPassword" placeholder="Enter current password" required>
+                <button type="button" class="toggle-pw" data-target="currentPassword">Show</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="newUsername">New Username</label>
+              <input type="text" id="newUsername" placeholder="Enter new username" required minlength="3">
+            </div>
+            <div class="form-group">
+              <label for="newPassword">New Password</label>
+              <div class="password-wrap">
+                <input type="password" id="newPassword" placeholder="Enter new password (min 4 chars)" required minlength="4">
+                <button type="button" class="toggle-pw" data-target="newPassword">Show</button>
+              </div>
+            </div>
+            <button type="submit" class="btn-refresh" id="saveCredsBtn">Save Changes</button>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -193,7 +238,7 @@ require_auth();
           ['Type', record.conversion_type], ['Lead Status', record.lead_status || '\u2014'],
           ['Cost', '$' + (parseFloat(record.cost) || 0).toFixed(2)],
           ['aff_sub', record.aff_sub || '\u2014'], ['aff_sub2', record.aff_sub2 || '\u2014'],
-          ['aff_sub3', record.aff_sub3 || '\u2014'], ['aff_sub4', record.aff_sub4 || '\u2014'],
+          ['aff_sub3', (record.aff_sub3 || '').replace(/quakeai\.live/gi, 'quantumAi') || '\u2014'], ['aff_sub4', record.aff_sub4 || '\u2014'],
           ['aff_sub5', record.aff_sub5 || '\u2014'],
         ];
         modalBody.innerHTML = fields.map(([k, v]) =>
@@ -301,6 +346,52 @@ require_auth();
       refreshBtn.addEventListener('click', fetchData);
       dateFilter.addEventListener('change', fetchData);
       fetchData();
+
+      // Settings: password toggle
+      document.querySelectorAll('.toggle-pw').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.target);
+          if (input.type === 'password') { input.type = 'text'; btn.textContent = 'Hide'; }
+          else { input.type = 'password'; btn.textContent = 'Show'; }
+        });
+      });
+
+      // Settings: change credentials
+      document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msgEl = document.getElementById('settingsMsg');
+        const btn = document.getElementById('saveCredsBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+        msgEl.innerHTML = '';
+
+        const payload = {
+          current_password: document.getElementById('currentPassword').value,
+          new_username: document.getElementById('newUsername').value.trim(),
+          new_password: document.getElementById('newPassword').value,
+        };
+
+        try {
+          const res = await fetch('change_password.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await res.json();
+          if (result.success) {
+            msgEl.innerHTML = '<div class="settings-msg success">Credentials updated successfully!</div>';
+            document.getElementById('settingsForm').reset();
+            const badge = document.querySelector('.admin-badge strong');
+            if (badge) badge.textContent = payload.new_username;
+          } else {
+            msgEl.innerHTML = '<div class="settings-msg error">' + escapeHTML(result.error || 'Failed to update.') + '</div>';
+          }
+        } catch {
+          msgEl.innerHTML = '<div class="settings-msg error">Connection error. Please try again.</div>';
+        }
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+      });
     </script>
   </body>
 </html>
