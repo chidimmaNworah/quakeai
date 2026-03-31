@@ -6,6 +6,7 @@
   else if (path.indexOf("/algo") === 0) active = "algo";
   else if (path.indexOf("/ch") === 0) active = "ch";
   else if (path.indexOf("/altstream") === 0) active = "altstream";
+  else if (path.indexOf("/13partners") === 0) active = "13partners";
 
   // Inject navbar CSS
   var css = document.createElement("style");
@@ -57,6 +58,14 @@
       links: [
         { label: "Landing Page", href: "/altstream/" },
         { label: "Dashboard", href: "/altstream/dashboard.php" },
+      ],
+    },
+    {
+      id: "13partners",
+      label: "13Partners",
+      links: [
+        { label: "Landing Page", href: "/13partners/" },
+        { label: "Dashboard", href: "/13partners/dashboard.php" },
       ],
     },
   ];

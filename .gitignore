@@ -1,5 +1,6 @@
 # Secrets
 public_html/config.php
+public_html/*/credentials.json
 
 # Server logs
 public_html/*/error_log
