@@ -3,7 +3,6 @@
   var path = window.location.pathname;
   var active = "hub";
   if (path.indexOf("/openaff") === 0) active = "openaff";
-  else if (path.indexOf("/algo") === 0) active = "algo";
   else if (path.indexOf("/ch") === 0) active = "ch";
   else if (path.indexOf("/altstream") === 0) active = "altstream";
   else if (path.indexOf("/13partners") === 0) active = "13partners";
@@ -37,14 +36,6 @@
       links: [
         { label: "Landing Page", href: "/openaff/" },
         { label: "Dashboard", href: "/openaff/dashboard.php" },
-      ],
-    },
-    {
-      id: "algo",
-      label: "Algo",
-      links: [
-        { label: "Landing Page", href: "/algo/btcprft.html" },
-        { label: "Dashboard", href: "/algo/leads.html" },
       ],
     },
     {
