@@ -13,13 +13,6 @@ define('OPENAFF_BEARER_TOKEN', 'your-bearer-token-here');
 define('OPENAFF_AFF_ID', '30045');
 define('OPENAFF_OFFER_ID', '1737');
 
-// AlgoLead
-define('ALGO_AUTH', 'your-algo-auth-key');
-define('ALGO_TOKEN', 'your-algo-token');
-define('ALGO_PARTNER_ID', '18');
-define('ALGO_TRACKING_ID', '1085987');
-define('ALGO_SUBCAMPAIGN_ID', '58391');
-
 // TrackingWebDo (CH)
 define('CH_API_KEY', 'your-ch-api-key');
 

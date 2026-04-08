@@ -243,9 +243,10 @@ require_auth();
       const modalBody = document.getElementById('modalBody');
       const modalClose = document.getElementById('modalClose');
 
-      // Default to today
+      // Default: last 30 days to today
       const today = new Date().toISOString().split('T')[0];
-      dateStart.value = today;
+      const thirtyAgo = new Date(Date.now() - 30 * 86400000).toISOString().split('T')[0];
+      dateStart.value = thirtyAgo;
       dateEnd.value = today;
 
       // Tab switching
@@ -264,9 +265,9 @@ require_auth();
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 
       function showModal(record) {
-        const fields = Object.entries(record).map(([k, v]) => [k, v ?? '—']);
+        const fields = Object.entries(record).map(([k, v]) => [k, resolveValue(v)]);
         modalBody.innerHTML = fields.map(([k, v]) =>
-          '<div class="detail-row"><span class="detail-key">' + escapeHTML(k) + '</span><span class="detail-val">' + escapeHTML(String(v)) + '</span></div>'
+          '<div class="detail-row"><span class="detail-key">' + escapeHTML(k) + '</span><span class="detail-val">' + escapeHTML(v) + '</span></div>'
         ).join('');
         modal.classList.add('active');
       }
@@ -277,10 +278,31 @@ require_auth();
         return div.innerHTML;
       }
 
+      // Safely resolve any value to a display string
+      // Handles objects like {name: "New", id: 1}, arrays, nulls, etc.
+      function resolveValue(val) {
+        if (val === null || val === undefined) return '—';
+        if (typeof val === 'string') return val;
+        if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+        if (Array.isArray(val)) return val.map(resolveValue).join(', ');
+        if (typeof val === 'object') {
+          if (val.name) return String(val.name);
+          if (val.title) return String(val.title);
+          if (val.label) return String(val.label);
+          if (val.value !== undefined) return String(val.value);
+          if (val.text) return String(val.text);
+          if (val.status) return String(val.status);
+          const entries = Object.entries(val).filter(([,v]) => v !== null && v !== undefined);
+          if (entries.length > 0) return entries.map(([k,v]) => k + ': ' + resolveValue(v)).join(', ');
+          return '—';
+        }
+        return String(val);
+      }
+
       // Status classification helpers
       function getStatusClass(status) {
         if (!status) return 'badge-status';
-        const s = String(status).toLowerCase();
+        const s = resolveValue(status).toLowerCase();
         if (s === 'ftd' || s === 'deposit' || s === 'converted') return 'badge-ftd';
         if (s === 'new' || s === 'pending' || s === 'callback') return 'badge-new';
         if (s === 'rejected' || s === 'decline' || s === 'trash' || s === 'invalid') return 'badge-reject';
@@ -288,12 +310,12 @@ require_auth();
       }
 
       function isFTD(d) {
-        const s = String(d.status || d.lead_status || '').toLowerCase();
+        const s = resolveValue(d.status || d.lead_status || '').toLowerCase();
         return s === 'ftd' || s === 'deposit' || s === 'converted';
       }
 
       function isRejected(d) {
-        const s = String(d.status || d.lead_status || '').toLowerCase();
+        const s = resolveValue(d.status || d.lead_status || '').toLowerCase();
         return s === 'rejected' || s === 'decline' || s === 'trash' || s === 'invalid';
       }
 
@@ -335,17 +357,37 @@ require_auth();
           }
 
           const result = await res.json();
+          console.log('13Partners API response:', result);
 
-          // 13Partners may return { data: [...], current_page, last_page, ... }
+          // 13Partners response formats:
+          // Paginated: { data: [...], current_page, last_page, total, per_page }
+          // Or: { data: { data: [...], current_page, last_page } }
+          // Or direct array: [...]
           if (result.data && Array.isArray(result.data)) {
             allData = result.data;
             currentPage = result.current_page || 1;
             lastPage = result.last_page || 1;
+          } else if (result.data && result.data.data && Array.isArray(result.data.data)) {
+            allData = result.data.data;
+            currentPage = result.data.current_page || result.current_page || 1;
+            lastPage = result.data.last_page || result.last_page || 1;
           } else if (Array.isArray(result)) {
             allData = result;
             lastPage = 1;
-          } else {
+          } else if (result.success === false) {
+            console.error('API error:', result);
             allData = [];
+            lastPage = 1;
+          } else {
+            // Try to find any array in the response
+            const keys = Object.keys(result);
+            const arrKey = keys.find(k => Array.isArray(result[k]));
+            if (arrKey) {
+              allData = result[arrKey];
+            } else {
+              console.warn('Unexpected response structure:', result);
+              allData = [];
+            }
             lastPage = 1;
           }
         } catch (err) {
@@ -375,10 +417,10 @@ require_auth();
           const email = escapeHTML(d.email || '—');
           const phone = escapeHTML(d.phone || '—');
           const country = escapeHTML(d.country || '—');
-          const status = d.status || d.lead_status || '—';
+          const status = resolveValue(d.status || d.lead_status || '—');
           const landing = escapeHTML(d.landing_name || d.landing || '—');
           return '<tr><td>' + date + '</td><td>' + name + '</td><td>' + email + '</td><td>' + phone + '</td><td>' + country + '</td>' +
-            '<td><span class="badge ' + getStatusClass(status) + '">' + escapeHTML(String(status)) + '</span></td>' +
+            '<td><span class="badge ' + getStatusClass(status) + '">' + escapeHTML(status) + '</span></td>' +
             '<td>' + landing + '</td>' +
             '<td><button class="btn-refresh" style="padding:5px 12px;font-size:11px" onclick="showModal(allData[' + i + '])">View</button></td></tr>';
         });

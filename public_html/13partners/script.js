@@ -327,10 +327,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     countryISO = "GB";
   }
 
-  // Setup phone field
+  // Show detected country
+  const detectedEl = document.getElementById("detectedCountry");
+  if (detectedEl) {
+    detectedEl.textContent = "Detected: " + countryISO;
+  }
+
+  // Setup phone field — user types full number with country code
   const phoneInput = document.getElementById("phone");
   if (phoneInput) {
-    phoneInput.placeholder = "Phone Number";
+    phoneInput.placeholder = "+1 234 567 8900";
   }
 
   // Real-time validation
@@ -366,7 +372,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     const firstName = document.getElementById("first_name").value.trim();
     const lastName = document.getElementById("last_name").value.trim();
     const email = document.getElementById("emailokobo").value.trim();
-    const phoneNumber = document.getElementById("phone").value.trim();
+    const rawPhone = document.getElementById("phone").value.trim();
+
+    // Parse country code from phone (e.g. "+44 7400123456" -> cc="+44", local="7400123456")
+    let parsedCC = countryCode; // fallback to auto-detected
+    let phoneNumber = rawPhone;
+    if (rawPhone.startsWith("+")) {
+      const digitsOnly = rawPhone.replace(/[^\d]/g, "");
+      // Try matching longest country code first (4 digits down to 1)
+      let matched = false;
+      for (let len = 4; len >= 1; len--) {
+        const prefix = "+" + digitsOnly.substring(0, len);
+        if (countryPhoneToISO[prefix]) {
+          parsedCC = prefix;
+          countryISO = countryPhoneToISO[prefix];
+          phoneNumber = digitsOnly.substring(len);
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        // No match — send full number as-is
+        phoneNumber = digitsOnly;
+      }
+    }
 
     // Validate
     let hasError = false;
@@ -382,8 +411,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       showFieldError("email", "Please enter a valid email address");
       hasError = true;
     }
-    if (phoneNumber.length < 5) {
-      showFieldError("phone", "Please enter a valid phone number");
+    if (rawPhone.replace(/[^\d]/g, "").length < 7) {
+      showFieldError(
+        "phone",
+        "Enter full number with country code (e.g. +44 7400123456)",
+      );
       hasError = true;
     }
     if (hasError) return;
@@ -409,7 +441,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       first_name: firstName,
       last_name: lastName,
       email: email,
-      phonecc: countryCode,
+      phonecc: parsedCC,
       phone: phoneNumber,
       country: countryISO,
       user_ip: clientIP,
@@ -426,19 +458,61 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       const result = await response.json();
+      const responseJson = JSON.stringify(result, null, 2);
+      console.log(
+        "13Partners API full response:",
+        responseJson,
+        "HTTP:",
+        response.status,
+      );
+      sessionStorage.setItem("lastApiResponse", responseJson);
+      sessionStorage.setItem("lastApiStatus", String(response.status));
+      alert("API Response (HTTP " + response.status + "):\n\n" + responseJson);
+
+      // Deep search for redirect URL in any nested structure
+      function findRedirectUrl(obj) {
+        if (!obj || typeof obj !== "object") return null;
+        // Check common redirect field names at current level
+        const urlKeys = [
+          "redirect",
+          "redirect_url",
+          "redirectUrl",
+          "url",
+          "autologin",
+          "autologin_url",
+          "login_url",
+          "broker_url",
+          "link",
+        ];
+        for (const key of urlKeys) {
+          if (obj[key]) {
+            if (typeof obj[key] === "string" && obj[key].startsWith("http"))
+              return obj[key];
+            if (
+              typeof obj[key] === "object" &&
+              obj[key].url &&
+              typeof obj[key].url === "string"
+            )
+              return obj[key].url;
+          }
+        }
+        // Recurse into nested objects
+        for (const val of Object.values(obj)) {
+          if (val && typeof val === "object") {
+            const found = findRedirectUrl(val);
+            if (found) return found;
+          }
+        }
+        return null;
+      }
 
       if (result.success === true || (response.ok && !result.errors)) {
-        overlayMsg.textContent = "Success! Your account has been registered.";
-        // If the API returns a redirect URL
-        if (result.redirect || result.redirect_url) {
-          setTimeout(() => {
-            window.location.href = result.redirect || result.redirect_url;
-          }, 1500);
-        } else {
-          setTimeout(() => {
-            hideOverlay();
-          }, 3000);
-        }
+        const redirectUrl = findRedirectUrl(result);
+        console.log("Detected redirect URL:", redirectUrl);
+        overlayMsg.textContent = "Success! Redirecting to trading platform...";
+        setTimeout(() => {
+          window.location.href = redirectUrl || "thank_you.html";
+        }, 1500);
       } else if (result.errors) {
         hideOverlay();
         const errorMessages = [];
